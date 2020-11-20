@@ -1,0 +1,213 @@
+//Api 2. En este microservicio se obtendra la lista de canciones
+//ENTIDAD
+package com.demo.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "song")
+public class Song {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "age")
+    private int age;
+
+    @Column(name = "gender")
+    private String gender;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+}
+
+//REPOSITORIO}
+package com.demo.repository;
+
+import com.demo.entity.Song;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SongRepository extends JpaRepository<Song,Integer> {
+}
+
+//SERVICIO
+package com.demo.service;
+
+import com.demo.entity.Song;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface SongService {
+     List<Song> findAll();
+     Optional<Song> get(Integer id);
+
+}
+
+//SERVICIO IMPLEMENTADO
+package com.demo.serviceimplement;
+
+import com.demo.entity.Song;
+import com.demo.repository.SongRepository;
+import com.demo.service.SongService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class SongServiceImplem implements SongService {
+    @Autowired
+     private SongRepository songRepo;
+
+
+    @Override
+    public List<Song> findAll() {
+        return songRepo.findAll();
+    }
+
+    @Override
+    public Optional<Song> get(Integer id) {
+        return songRepo.findById(id);
+    }
+}
+
+//SERVICIO REST (CRUD)
+package com.demo.rest;
+
+import com.demo.entity.Song;
+import com.demo.service.SongService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/song")
+public class SongRest {
+
+    @Autowired
+    SongService songServ;
+
+    @GetMapping
+    public List<Song> findAll(){
+        return songServ.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Song> get(@PathVariable("id") Integer id)
+    {
+        return songServ.get(id);
+    }
+}
+
+//MAIN
+package com.demo;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Api2  {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Api2.class,args);
+    }
+
+
+}
+
+//APPLICATION.PROPERTIES
+server.port=8082
+spring.h2.console.enabled=true
+spring.jpa.show-sql=true
+spring.application.name=service-api2
+
+
+//BASE DE DATOS EN MEMORIA H2 : NOMBRE: DATA.SQL
+INSERT INTO song(id,name,age,gender) VALUES(1,'Hello', 5, 'pop');
+INSERT INTO song(id,name,age,gender) VALUES(2,'Complicate', 8,'alternative');
+INSERT INTO song(id,name,age,gender) VALUES(3,'Pop', 10, 'pop');
+INSERT INTO song(id,name,age,gender) VALUES(4,'This I promise You', 8,'balada');
+
+//POM.XML --> PARA SABER QUE DEPENDENCIAS SE UTILIZO
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.7.RELEASE</version>
+        <relativePath/>
+    </parent>
+    <groupId>com.demo</groupId>
+    <artifactId>Api2</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+    </dependencies>
+
+</project>

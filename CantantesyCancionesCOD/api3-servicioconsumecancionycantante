@@ -1,0 +1,303 @@
+//Api 3. En este microservicio se obtendra un objeto que devuelva un cantante y una cancion.
+//ENTIDAD ALBUM
+package com.demo.entity;
+
+public class Album {
+
+    private Song song;
+    private Singer singer;
+
+    public Song getSong() {
+        return song;
+    }
+
+    public void setSong(Song song) {
+        this.song = song;
+    }
+
+    public Singer getSinger() {
+        return singer;
+    }
+
+    public void setSinger(Singer singer) {
+        this.singer = singer;
+    }
+
+    public Album(Song song, Singer singer) {
+        this.song = song;
+        this.singer = singer;
+    }
+
+    public Album()
+    {
+
+    }
+}
+
+//ENTIDAD SINGER
+package com.demo.entity;
+
+public class Singer {
+    private int id;
+    private String name;
+    private int age;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+//ENTIDAD SONG
+package com.demo.entity;
+
+public class Song {
+    private int id;
+    private String name;
+    private int age;
+    private String gender;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+}
+
+//REPOSITORIO NO TIENE
+//SERVICIO
+package com.demo.service;
+
+import com.demo.entity.Album;
+import com.demo.entity.Singer;
+import com.demo.entity.Song;
+
+import java.util.List;
+
+public interface AlbumService {
+
+ //   public List<Album> findAll();
+   // public List<Song> getfindAll();
+    public Album findById(Integer idSong,Integer idSinger);
+
+}
+
+
+//SERVICIO IMPLEMENTADO
+package com.demo.serviceimplement;
+
+import com.demo.entity.Album;
+import com.demo.entity.Singer;
+import com.demo.entity.Song;
+import com.demo.service.AlbumService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+public class AlbumServiceImplem implements AlbumService {
+
+    @Autowired
+    private RestTemplate clienteRest;
+/*
+    @Override
+    public List<Album> findAll() {
+        List<Singer> singer= Arrays.asList(clienteRest.getForObject("http://localhost:8080/singer",Singer[].class));
+        Song so = new Song();
+        return singer.stream().map(s-> new Singer(s,so)).collect(Collectors.toList());
+    }*/
+/*
+    @Override
+    public List<Album> getfindAll() {
+        List<Song> song= Arrays.asList(clienteRest.getForObject("http://localhost:8081/song",Song[].class));
+        return song.stream().map(so-> new Song()).collect(Collectors.toList());
+    }
+*/
+
+    @Value("${service-api1.ribbon.listOfServer}")
+    private String local;
+
+    @Value("${service-api2.ribbon.listOfServer}")
+    private String local2;
+
+    @Override
+    public Album findById(Integer idSong,Integer idSinger) {
+        Map<String,String> pathVariables2= new HashMap<String,String>();
+        pathVariables2.put("id",idSong.toString());
+        Map<String,String> pathVariables= new HashMap<String,String>();
+        pathVariables.put("id",idSinger.toString());
+
+        Song song= clienteRest.getForObject(local2,Song.class,pathVariables2);
+        Singer singer= clienteRest.getForObject(local,Singer.class,pathVariables);
+        return new Album(song,singer);
+    }
+}
+
+//SERVICIO REST (CRUD)
+package com.demo.rest;
+
+import com.demo.entity.Album;
+import com.demo.entity.Singer;
+import com.demo.entity.Song;
+import com.demo.service.AlbumService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/album")
+public class AlbumRest {
+
+    @Autowired
+    private AlbumService albumServ;
+
+    @GetMapping("/{id}/singer/{id1}")
+    public Album findById(@PathVariable("id") Integer idSong,@PathVariable("id1") Integer idSinger) {
+      return albumServ.findById(idSong,idSinger);
+    }
+}
+//MAIN
+package com.demo;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Api3 {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Api3.class,args);
+    }
+
+
+}
+
+//APPCONFIG : PARA CONFIGURAR EL REST TEMPLATE
+package com.demo;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+@Configuration
+public class AppConfig {
+
+    @Bean("clienteRest")
+    public RestTemplate registrarRestTemplate()
+    {
+        return new RestTemplate();
+    }
+}
+
+// APPLICATION.PROPERTIES
+server.port=8083
+spring.h2.console.enabled=true
+spring.jpa.show-sql=true
+spring.application.name=service-api3
+service-api2.ribbon.listOfServer=http://localhost:8082/song/{id}
+service-api1.ribbon.listOfServer=http://localhost:8081/singer/{id}
+
+
+//POM.XML --> PARA SABER QUE DEPENDENCIAS SE UTILIZO
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.7.RELEASE</version>
+        <relativePath/>
+    </parent>
+    
+    <groupId>com.demo</groupId>
+    <artifactId>Api3</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+    </dependencies>
+
+</project>
+

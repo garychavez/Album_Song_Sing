@@ -1,0 +1,211 @@
+//Api 1. En este microservicio se obtendra la lista de cantantes
+//ENTIDAD
+package com.demo.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "singer")
+public class Singer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "age")
+    private int age;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+//REPOSITORIO
+package com.demo.repository;
+
+import com.demo.entity.Singer;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SingerRepository extends JpaRepository<Singer,Integer> {
+}
+
+//SERVICIO
+import com.demo.entity.Singer;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface SingerService {
+
+    List<Singer> findAll();
+    Optional<Singer> get (Integer id);
+}
+//SERVICIO IMPLEMENTADO
+package com.demo.serviceimplement;
+
+import com.demo.entity.Singer;
+import com.demo.repository.SingerRepository;
+import com.demo.service.SingerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class SingerServiceImplem implements SingerService {
+    @Autowired
+    private SingerRepository singerRepo;
+
+
+    @Override
+    public List<Singer> findAll() {
+        return singerRepo.findAll();
+    }
+
+
+    @Override
+    public Optional<Singer> get(Integer id)
+    {
+        return singerRepo.findById(id);
+    }
+}
+//SERVICIO REST (CRUD)
+package com.demo.rest;
+
+import com.demo.entity.Singer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.demo.service.SingerService;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/singer")
+public class SingerRest {
+
+    @Autowired
+    SingerService singerServ;
+
+    @GetMapping
+    public List<Singer> findAll() {
+
+        return singerServ.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Singer> get (@PathVariable("id") Integer id){
+        return singerServ.get(id);
+    }
+}
+//MAIN
+package com.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(
+      //  scanBasePackages = ""
+)
+public class Api1{
+
+    public static void main(String[] args) {
+        SpringApplication.run(Api1.class,args);
+
+    }
+
+
+
+
+}
+//APPLICATION PROPERTIES
+server.port=8081
+spring.h2.console.enabled=true
+spring.jpa.show-sql=true
+spring.application.name=service-api1
+
+//DATA.SQL --- BASE DE DATOS EN MEMORIA H2
+
+INSERT INTO singer(id,name,age) VALUES(1,'Adele', 35);
+INSERT INTO singer(id,name,age) VALUES(2,'Abril Lavigne', 30);
+INSERT INTO singer(id,name,age) VALUES(3,'Nsync', 25);
+INSERT INTO singer(id,name,age) VALUES(4,'Nsync', 25);
+
+//POM.XML --> PARA SABER QUE DEPENDENCIAS SE UTILIZO
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.1.7.RELEASE</version>
+    <relativePath/>
+</parent>
+    <groupId>com.demo</groupId>
+    <artifactId>Api1</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.199</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+//Todo se prueba en postman
