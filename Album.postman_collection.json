@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "7c55f5a2-15db-43bc-aec7-731dfc92e177",
+		"name": "Album",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Singer",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8031/singer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8031",
+					"path": [
+						"singer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Song",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8032/song",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8032",
+					"path": [
+						"song"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Album",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8033/album/song/3/singer/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8033",
+					"path": [
+						"album",
+						"song",
+						"3",
+						"singer",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
