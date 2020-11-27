@@ -1,4 +1,7 @@
 package com.album.repository;
 
-public interface AlbumRepository {
+import com.album.entity.Album;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AlbumRepository extends JpaRepository<Album, Integer> {
 }

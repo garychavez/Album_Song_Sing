@@ -1,33 +1,25 @@
 package com.album.entity;
 
+import com.album.response.Singer;
+import com.album.response.Song;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "albun")
+@Data
 public class Album {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    private Song song;
-    private Singer singer;
+    @Column(name = "idSong")
+    private int idSong;
 
-    public Song getSong() {
-        return song;
-    }
+    @Column(name = "idSinger")
+    private int idSinger;
 
-    public void setSong(Song song) {
-        this.song = song;
-    }
 
-    public Singer getSinger() {
-        return singer;
-    }
-
-    public void setSinger(Singer singer) {
-        this.singer = singer;
-    }
-
-    public Album(Song song, Singer singer) {
-        this.song = song;
-        this.singer = singer;
-    }
-
-    public Album()
-    {
-
-    }
 }

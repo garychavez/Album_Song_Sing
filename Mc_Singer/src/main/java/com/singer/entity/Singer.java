@@ -1,9 +1,12 @@
 package com.singer.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "singer")
+@Data
 public class Singer {
 
     @Id
@@ -16,27 +19,4 @@ public class Singer {
     @Column(name = "age")
     private int age;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
 }
